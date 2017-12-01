@@ -2,9 +2,12 @@ version: '3.3'
 
 services:
   idporten-innlogging-statistikk-klient:
-    image: eid-jenkins02.dmz.local:8081/idporten-innlogging-statistikk-klient:${VERSION}
+    image: difi/idporten-innlogging-statistikk-klient:${VERSION}
     ports:
       - "8085:8080"
+    configs:
+      - source: idporten-innlogging-statistikk-klient
+        target: /application.properties
     networks:
       - statistics
 

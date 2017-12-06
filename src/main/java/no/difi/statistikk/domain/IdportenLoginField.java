@@ -11,6 +11,8 @@ public class IdportenLoginField {
     @JsonProperty("fields")
     private List<IdportenLoginValue> values;
 
+    public IdportenLoginField(){}
+
     public IdportenLoginField(IdportenLoginFieldBuilder idportenLoginFieldBuilder) {
         this.values = idportenLoginFieldBuilder.getValues();
     }

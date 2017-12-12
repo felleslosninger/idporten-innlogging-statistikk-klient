@@ -14,6 +14,7 @@ public class IdportenLoginFetch {
     private final UriTemplate uriTemplate;
     private final RestTemplate restTemplate;
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final String reportType = ("r1");
 
     public IdportenLoginFetch(URL baseUrl, RestTemplate restTemplate) {
         this.uriTemplate = new UriTemplate(
@@ -24,7 +25,7 @@ public class IdportenLoginFetch {
         this.restTemplate = restTemplate;
     }
 
-    public IdportenLoginField[] perform(String reportType, ZonedDateTime from) {
+    public IdportenLoginField[] perform(ZonedDateTime from) {
         URI uri = uriTemplate.expand(reportType, from.getYear(), from.getMonthValue(), from.getDayOfMonth(), from.getHour());
         logger.info("Fetching from " + uri + "...");
         IdportenLoginField[] result = restTemplate.getForObject(uri, IdportenLoginField[].class);

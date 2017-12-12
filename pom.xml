@@ -22,7 +22,7 @@
         <java.version>1.8</java.version>
         <difi.docker.registry>docker.io/difi</difi.docker.registry>
         <artifactory.url>http://eid-artifactory.dmz.local:8080/artifactory</artifactory.url>
-        <ingestclient.version>2017-11-17-1412-2f50a6b</ingestclient.version>
+        <ingestclient.version>2017-11-28-0928-7bf9210</ingestclient.version>
     </properties>
 
     <dependencies>

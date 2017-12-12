@@ -18,4 +18,11 @@ public class ServiceProvider {
 
     }
 
+    public String getEntityId() {
+        return entityId;
+    }
+
+    public String getOrganisasjonsnummer() {
+        return organisasjonsnummer;
+    }
 }

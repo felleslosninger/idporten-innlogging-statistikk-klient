@@ -11,8 +11,11 @@ public class IdportenLoginValue {
     public String getValue() {
         return value;
     }
-
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public Long getValueAsLong() {
+        return Long.parseLong(value);
     }
 }

@@ -1,13 +1,17 @@
 package no.difi.statistikk.fetch;
 
+import no.difi.statistics.ingest.client.IngestClient;
+import no.difi.statistics.ingest.client.model.TimeSeriesDefinition;
+import no.difi.statistics.ingest.client.model.TimeSeriesPoint;
 import no.difi.statistikk.domain.IdportenLoginField;
 import no.difi.statistikk.domain.IdportenLoginFieldBuilder;
 import no.difi.statistikk.domain.IdportenLoginValue;
+import no.difi.statistikk.mapper.IdportenLoginMapper;
 import no.difi.statistikk.service.IdportenLoginFetch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-
+import org.mockito.Mockito;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -20,7 +24,6 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
-import static no.difi.statistikk.domain.IdportenLoginReport.R1;
 
 class DataTransferTest {
 
@@ -30,24 +33,34 @@ class DataTransferTest {
     @Mock
     private IdportenLoginFetch fetchMock;
 
+    @Mock
+    private IdportenLoginMapper mapperMock;
+
+    @Mock
+    private IngestClient ingestClientMock;
+
+    @Mock
+    private List<TimeSeriesPoint> tspMock;
+
     @BeforeEach
     public void setUp() {
         initMocks(this);
     }
 
     @Test
-    public void shouldFetchR1WhenGotDataOnNextHour() {
+    public void shouldFetchAndPushR1WhenGotDataOnNextHour() {
 
         ZonedDateTime from = timeRef.minusHours(2);
 
         //peak
-        when(fetchMock.perform(R1.getId(), timeRef.minusHours(1))).thenReturn(fields);
+        when(fetchMock.perform(timeRef.minusHours(1))).thenReturn(fields);
+        when(fetchMock.perform(from)).thenReturn(fields);
+        when(mapperMock.mapMeasurements(Mockito.anyList(), eq(from))).thenReturn(tspMock);
 
-        when(fetchMock.perform(R1.getId(), from)).thenReturn(fields);
-
-        DataTransfer dataTransfer = new DataTransfer(fetchMock);
+        DataTransfer dataTransfer = new DataTransfer(fetchMock, mapperMock, ingestClientMock);
         dataTransfer.transfer(from);
-        verify(fetchMock, times(1)).perform(R1.getId(), from);
+        verify(fetchMock, times(1)).perform(from);
+        verify(ingestClientMock, times(1)).ingest(any(TimeSeriesDefinition.class), any());
     }
 
     @Test
@@ -57,13 +70,15 @@ class DataTransferTest {
         ZonedDateTime from = timeRef.minusHours(2);
 
         //peak
-        when(fetchMock.perform(R1.getId(), timeRef.minusHours(1))).thenReturn(emptyFields);
+        when(fetchMock.perform(timeRef.minusHours(1))).thenReturn(emptyFields);
 
-        when(fetchMock.perform(R1.getId(), from)).thenReturn(fields);
+        when(fetchMock.perform(from)).thenReturn(fields);
 
-        DataTransfer dataTransfer = new DataTransfer(fetchMock);
+        DataTransfer dataTransfer = new DataTransfer(fetchMock, mapperMock, ingestClientMock);
         dataTransfer.transfer(from);
-        verify(fetchMock, never()).perform(R1.getId(), from);
+        verify(fetchMock, never()).perform(from);
+        verifyZeroInteractions(mapperMock);
+        verifyZeroInteractions(ingestClientMock);
     }
 
     private IdportenLoginField createEmptyIdportenLoginField() {

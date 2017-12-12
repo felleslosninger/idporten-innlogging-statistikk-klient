@@ -2,6 +2,7 @@ package no.difi.statistikk;
 
 import no.difi.statistics.ingest.client.IngestClient;
 import no.difi.statistikk.fetch.DataTransfer;
+import no.difi.statistikk.mapper.IdportenLoginMapper;
 import no.difi.statistikk.schedule.Scheduler;
 import no.difi.statistikk.service.IdportenLoginFetch;
 import no.difi.statistikk.service.LastDatapoint;
@@ -52,16 +53,20 @@ public class Config {
     }
 
     @Bean
-    public IdportenLoginFetch idportenLoginFetch() { return new IdportenLoginFetch(idportenAdminUrl, restTemplate());}
+    public IdportenLoginFetch idportenLoginFetch() {
+        return new IdportenLoginFetch(idportenAdminUrl, restTemplate());
+    }
 
     @Bean
     public Scheduler scheduler() {
         return new Scheduler(dataTransfer(), lastDatapoint());
     }
+
     @Bean
     public DataTransfer dataTransfer() {
-        return new DataTransfer(idportenLoginFetch());
+        return new DataTransfer(idportenLoginFetch(), idportenLoginMapper(), ingestClient());
     }
+
     @Bean
     public LastDatapoint lastDatapoint() {
         return new LastDatapoint(ingestClient());
@@ -71,4 +76,10 @@ public class Config {
     public IngestClient ingestClient() {
         return new IngestClient(statisticsIngestUrl, readTimeout, connTimeout, reportOwner, reportOwner, ingestPassword);
     }
+
+    @Bean
+    public IdportenLoginMapper idportenLoginMapper() {
+        return new IdportenLoginMapper(spFetch());
+    }
+
 }

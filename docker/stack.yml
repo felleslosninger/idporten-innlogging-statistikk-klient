@@ -8,6 +8,9 @@ services:
     configs:
       - source: idporten-innlogging-statistikk-klient
         target: /application.properties
+    secrets:
+      - source: idporten-innlogging-statistikk-klient_ingest-password
+        target: idporten-innlogging-stat-pumba
     networks:
       - statistics
 

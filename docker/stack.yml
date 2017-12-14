@@ -17,3 +17,11 @@ services:
 networks:
   statistics:
     external: true
+
+secrets:
+  idporten-innlogging-statistikk-klient_ingest-password:
+    external: true
+
+configs:
+  idporten-innlogging-statistikk-klient:
+    external: true

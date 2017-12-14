@@ -7,6 +7,7 @@ pipelineWithMavenAndDocker {
     productionHostSshKey = 'ssh.git.difi.local'
     stackName = 'idporten'
     gitSshKey = 'ssh.github.com'
+    dockerRegistry = 'dockerHub'
     crucibleUrl = 'http://fisheye.difi.local:8060'
     crucibleProjectKey = 'CR'
 }

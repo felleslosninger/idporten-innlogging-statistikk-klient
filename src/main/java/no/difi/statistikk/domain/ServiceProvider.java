@@ -12,6 +12,8 @@ public class ServiceProvider {
     @JsonProperty("Organisasjonsnummer")
     private String organisasjonsnummer;
 
+    public ServiceProvider() {}
+
     public ServiceProvider(String entityId, String organisasjonsnummer){
         this.entityId = entityId;
         this.organisasjonsnummer = organisasjonsnummer;

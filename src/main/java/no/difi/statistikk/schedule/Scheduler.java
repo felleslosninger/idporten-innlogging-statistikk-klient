@@ -25,27 +25,16 @@ public class Scheduler {
     }
 
     @Scheduled(cron = cron_one_minute_interval)
-    public void fetchKontaktregisterReportData() {
+    public void fetchIdportenInloggingReportData() {
 
-        ZonedDateTime from = lastDatapoint.get(seriesName);
-        ZonedDateTime to = ZonedDateTime.now(ZoneId.of("UTC"));
-        if (isMoreThanOneYearDifference(from, to)) {
-            to = oneYearAfter(from);
-        }
-        logger.info("Transfering data from {} to {}", from, to);
+        ZonedDateTime from = lastDatapoint.get(seriesName).plusHours(1);
+
+        logger.info("Transfering data for {}", from);
         try {
             dataTransfer.transfer(from);
         } catch (Exception e) {
             logger.error("Failed to transfer data", e);
         }
         logger.info("Data transfer completed");
-    }
-
-    private ZonedDateTime oneYearAfter(ZonedDateTime reference) {
-        return reference.plus(1, YEARS);
-    }
-
-    private boolean isMoreThanOneYearDifference(ZonedDateTime from, ZonedDateTime to) {
-        return from.plus(1, YEARS).isBefore(to);
     }
 }

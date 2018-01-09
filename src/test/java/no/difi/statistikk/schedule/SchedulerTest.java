@@ -11,6 +11,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,11 +39,11 @@ class SchedulerTest {
         ZonedDateTime shouldTransferDataFrom = ZonedDateTime.of(2015, 5, 1, 1, 0, 0, 0, ZoneId.of("UTC"));
 
         Scheduler scheduler = new Scheduler(dataTransferMock, lastDatapointMock);
-        doNothing().when(dataTransferMock).transfer(any(ZonedDateTime.class));
+        doNothing().when(dataTransferMock).transfer(any(ZonedDateTime.class), any(ZonedDateTime.class));
         when(lastDatapointMock.get(seriesName)).thenReturn(lastPoint);
 
         scheduler.fetchIdportenInloggingReportData();
 
-        verify(dataTransferMock).transfer(shouldTransferDataFrom);
+        verify(dataTransferMock).transfer(eq(shouldTransferDataFrom), any(ZonedDateTime.class));
     }
 }

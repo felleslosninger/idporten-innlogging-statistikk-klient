@@ -9,12 +9,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-import static java.time.temporal.ChronoUnit.YEARS;
-
 public class Scheduler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private static final String cron_one_minute_interval = "0 */1 * * * *";
-
     private final DataTransfer dataTransfer;
     private final LastDatapoint lastDatapoint;
     private final String seriesName = "idporten-innlogging";
@@ -24,14 +20,16 @@ public class Scheduler {
         this.lastDatapoint = lastDatapoint;
     }
 
-    @Scheduled(cron = cron_one_minute_interval)
+    @Scheduled(fixedDelay = 60000L)
     public void fetchIdportenInloggingReportData() {
 
         ZonedDateTime from = lastDatapoint.get(seriesName).plusHours(1);
+        ZonedDateTime to = ZonedDateTime.now(ZoneId.of("UTC"));
 
-        logger.info("Transfering data for {}", from);
+        logger.info("Transfering data from {} to {}", from, to);
+
         try {
-            dataTransfer.transfer(from);
+            dataTransfer.transfer(from, to);
         } catch (Exception e) {
             logger.error("Failed to transfer data", e);
         }

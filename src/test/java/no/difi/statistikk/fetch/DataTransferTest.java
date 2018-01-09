@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.List;
 
 
+import static java.lang.Math.toIntExact;
+import static java.time.temporal.ChronoUnit.HOURS;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
@@ -50,15 +52,15 @@ class DataTransferTest {
     @Test
     public void shouldFetchAndPushR1WhenGotDataOnNextHour() {
 
-        ZonedDateTime from = timeRef.minusHours(2);
+        ZonedDateTime from = timeRef;
 
         //peak
-        when(fetchMock.perform(timeRef.minusHours(1))).thenReturn(fields);
+        when(fetchMock.perform(timeRef.plusHours(1))).thenReturn(fields);
         when(fetchMock.perform(from)).thenReturn(fields);
         when(mapperMock.mapMeasurements(Mockito.anyList(), eq(from))).thenReturn(tspMock);
 
         DataTransfer dataTransfer = new DataTransfer(fetchMock, mapperMock, ingestClientMock);
-        dataTransfer.transfer(from);
+        dataTransfer.transfer(from, from);
         verify(fetchMock, times(1)).perform(from);
         verify(ingestClientMock, times(1)).ingest(any(TimeSeriesDefinition.class), any());
     }
@@ -67,16 +69,69 @@ class DataTransferTest {
     public void shouldNotFetchR1WhenDataOnNextHourIsEmpty() {
         final IdportenLoginField[] emptyFields = {createEmptyIdportenLoginField()};
 
-        ZonedDateTime from = timeRef.minusHours(2);
+        ZonedDateTime from = timeRef.minusHours(1);
 
         //peak
-        when(fetchMock.perform(timeRef.minusHours(1))).thenReturn(emptyFields);
-
         when(fetchMock.perform(from)).thenReturn(fields);
+        when(fetchMock.perform(timeRef)).thenReturn(emptyFields);
 
         DataTransfer dataTransfer = new DataTransfer(fetchMock, mapperMock, ingestClientMock);
-        dataTransfer.transfer(from);
+        dataTransfer.transfer(from, from);
         verify(fetchMock, never()).perform(from);
+        verifyZeroInteractions(mapperMock);
+        verifyZeroInteractions(ingestClientMock);
+    }
+
+    @Test
+    public void shouldTransferAllDataFromTo() {
+        final IdportenLoginField[] emptyFields = {createEmptyIdportenLoginField()};
+
+        ZonedDateTime from = ZonedDateTime.of(LocalDate.of(2014, 1, 4), LocalTime.of(9, 05), ZoneId.of("Europe/Paris"));
+        ZonedDateTime to = from.plusYears(2);
+
+        int numberOfHoursToGet = toIntExact(from.until(to, HOURS));
+
+        when(fetchMock.perform(any(ZonedDateTime.class))).thenReturn(fields);
+        when(fetchMock.perform(to.plusHours(1))).thenReturn(emptyFields);
+        when(mapperMock.mapMeasurements(Mockito.anyList(), eq(from))).thenReturn(tspMock);
+
+        DataTransfer dataTransfer = new DataTransfer(fetchMock, mapperMock, ingestClientMock);
+        dataTransfer.transfer(from, to);
+        verify(fetchMock, times(1)).perform(from);
+        verify(ingestClientMock, times( numberOfHoursToGet)).ingest(any(TimeSeriesDefinition.class), any());
+    }
+
+    @Test
+    public void shouldHandleThatR1ReportIsEmptyAndToFieldIsEmpty() {
+        final IdportenLoginField[] emptyFields = {createEmptyIdportenLoginField()};
+
+        ZonedDateTime from = ZonedDateTime.of(LocalDate.of(2014, 1, 4), LocalTime.of(9, 00), ZoneId.of("Europe/Paris"));
+        ZonedDateTime hourWithEmptyR1Report = ZonedDateTime.of(LocalDate.of(2014, 1, 4), LocalTime.of(12, 00), ZoneId.of("Europe/Paris"));
+        ZonedDateTime to = from.plusDays(1);
+
+        when(fetchMock.perform(any(ZonedDateTime.class))).thenReturn(fields);
+        when(fetchMock.perform(hourWithEmptyR1Report)).thenReturn(emptyFields);
+        when(fetchMock.perform(to)).thenReturn(emptyFields);
+        when(mapperMock.mapMeasurements(Mockito.anyList(), eq(from))).thenReturn(tspMock);
+
+        DataTransfer dataTransfer = new DataTransfer(fetchMock, mapperMock, ingestClientMock);
+        dataTransfer.transfer(from, to);
+
+        verify(ingestClientMock, times( 23)).ingest(any(TimeSeriesDefinition.class), any());
+    }
+
+    @Test
+    public void shouldHandleThatAllReportsAreEmpty() {
+        final IdportenLoginField[] emptyFields = {createEmptyIdportenLoginField()};
+
+        ZonedDateTime from = timeRef;
+        ZonedDateTime to = timeRef.plusYears(2);
+
+        when(fetchMock.perform(any(ZonedDateTime.class))).thenReturn(emptyFields);
+        when(mapperMock.mapMeasurements(Mockito.anyList(), eq(from))).thenReturn(tspMock);
+        DataTransfer dataTransfer = new DataTransfer(fetchMock, mapperMock, ingestClientMock);
+        dataTransfer.transfer(from, to);
+
         verifyZeroInteractions(mapperMock);
         verifyZeroInteractions(ingestClientMock);
     }

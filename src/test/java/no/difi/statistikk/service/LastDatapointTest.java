@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.net.MalformedURLException;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.time.temporal.ChronoUnit;
@@ -35,10 +36,10 @@ public class LastDatapointTest {
     }
 
     @Test
-    @DisplayName("It should return ZoneDateTime set to now() minus 10 hours when no datapoint is found")
+    @DisplayName("It should return ZoneDateTime set to 2015-01-01-0-0-0-0")
     public void shouldReturnNullWhenResponseCode200AndEmptyDataset() {
         when(ingestClientMock.last(anyObject())).thenReturn(Optional.empty());
-        final ZonedDateTime expected = ZonedDateTime.now().minusHours(10).truncatedTo(ChronoUnit.HOURS);
+        final ZonedDateTime expected = ZonedDateTime.of(2011, 8, 14, 0, 0, 0, 0, ZoneId.of("UTC"));
         assertEquals(expected, lastDatapoint.get(seriesId).truncatedTo(ChronoUnit.HOURS));
     }
 

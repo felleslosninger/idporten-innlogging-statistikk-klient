@@ -31,7 +31,9 @@ public class IdportenLoginMapper {
     }
 
     public List<TimeSeriesPoint> mapMeasurements(List<IdportenLoginField> fields, ZonedDateTime dateTime) {
+        List<IdportenLoginField> r1fields = new ArrayList<>(fields);
         List<ServiceProvider> serviceProviders = serviceProviderFetch.perform();
+        fields = removeSumFromReport(r1fields);
         return fields.stream()
                 .map(field -> TimeSeriesPoint.builder()
                         .timestamp(dateTime)
@@ -61,4 +63,10 @@ public class IdportenLoginMapper {
         return measurements;
     }
 
+    private List<IdportenLoginField> removeSumFromReport(List<IdportenLoginField> list) {
+        if (list.size() > 1) {
+            list.remove(list.size() - 1);
+        }
+        return list;
+    }
 }

@@ -8,10 +8,14 @@ import no.difi.statistikk.domain.IdportenLoginFieldBuilder;
 import no.difi.statistikk.domain.IdportenLoginValue;
 import no.difi.statistikk.mapper.IdportenLoginMapper;
 import no.difi.statistikk.service.IdportenLoginFetch;
+import no.difi.statistikk.service.ServiceProviderFetch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -26,6 +30,7 @@ import static java.time.temporal.ChronoUnit.HOURS;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
+import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 class DataTransferTest {
 
@@ -43,6 +48,12 @@ class DataTransferTest {
 
     @Mock
     private List<TimeSeriesPoint> tspMock;
+
+    @Captor
+    private ArgumentCaptor<List<TimeSeriesPoint>> tspCaptor;
+
+    @Mock
+    private ServiceProviderFetch serviceProviderFetchMock;
 
     @BeforeEach
     public void setUp() {
@@ -134,6 +145,53 @@ class DataTransferTest {
 
         verifyZeroInteractions(mapperMock);
         verifyZeroInteractions(ingestClientMock);
+    }
+
+    @Test
+    public void shouldRemoveLastRowFromReport() {
+
+        final IdportenLoginField[] fields = {
+                createIdportenLoginField("Direktoratet for forvaltning og ikt", "autotest-systest-sptest1", "cucumber-samltest", "cucumber-samltest", "0", "0", "43", "0", "0", "0", "4", "0", "0", "47"),
+                createIdportenLoginField("Direktoratet for forvaltning og ikt", "autotest-systest-sptest1", "cucumber-samltest", "cucumber-samltest", "0", "0", "43", "0", "0", "0", "4", "0", "0", "47"),
+                createIdportenLoginField("Direktoratet for forvaltning og ikt", "autotest-systest-sptest1", "cucumber-samltest", "cucumber-samltest", "0", "0", "43", "0", "0", "0", "4", "0", "0", "47"),
+                createIdportenLoginField("Sum", null, null, null, "0", "0", "0", "0", "0", "0", "0", "0", "0", "141")};
+
+        ZonedDateTime from = timeRef;
+
+        when(fetchMock.perform(timeRef.plusHours(1))).thenReturn(fields);
+        when(fetchMock.perform(from)).thenReturn(fields);
+
+        IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
+
+        DataTransfer dataTransfer = new DataTransfer(fetchMock, idportenLoginMapper, ingestClientMock);
+        dataTransfer.transfer(from, from);
+
+        verify(fetchMock, times(1)).perform(from);
+        verify(ingestClientMock, times(1)).ingest(any(TimeSeriesDefinition.class),tspCaptor.capture());
+        assertEquals("TimeSeries size", 3, tspCaptor.getValue().size());
+    }
+
+    @Test
+    public void shouldRemoveLastRowFromReportWhenTwoRows() {
+
+        final IdportenLoginField[] fields = {
+                createIdportenLoginField("Direktoratet for forvaltning og ikt", "autotest-systest-sptest1", "cucumber-samltest", "cucumber-samltest", "0", "0", "43", "0", "0", "0", "4", "0", "0", "47"),
+                createIdportenLoginField("Direktoratet for forvaltning og ikt", "autotest-systest-sptest1", "cucumber-samltest", "cucumber-samltest", "0", "0", "43", "0", "0", "0", "4", "0", "0", "47"),
+                createIdportenLoginField("Sum", null, null, null, "0", "0", "0", "0", "0", "0", "0", "0", "0", "94")};
+
+        ZonedDateTime from = timeRef;
+
+        when(fetchMock.perform(timeRef.plusHours(1))).thenReturn(fields);
+        when(fetchMock.perform(from)).thenReturn(fields);
+
+        IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
+
+        DataTransfer dataTransfer = new DataTransfer(fetchMock, idportenLoginMapper, ingestClientMock);
+        dataTransfer.transfer(from, from);
+
+        verify(fetchMock, times(1)).perform(from);
+        verify(ingestClientMock, times(1)).ingest(any(TimeSeriesDefinition.class),tspCaptor.capture());
+        assertEquals("TimeSeries size", 2, tspCaptor.getValue().size());
     }
 
     private IdportenLoginField createEmptyIdportenLoginField() {

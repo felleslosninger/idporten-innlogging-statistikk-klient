@@ -190,6 +190,51 @@ public class IdportenLoginMapperTest {
         Assertions.assertTrue(tsp.equals(tspExpected));
     }
 
+    @Test
+    public void shouldRemoveSumRowInIdportenFieldsIfTwoRows(){
+
+        List<IdportenLoginField> idportenLoginFields = new ArrayList<>();
+        idportenLoginFields.add(createIdportenLoginField("GotTL", "TE-entityId-not-in-splist", "TE", null, "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
+        idportenLoginFields.add(createIdportenLoginField("Sum", "0", "0", "0", "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
+        IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
+
+        List<TimeSeriesPoint> timeSeriesPoints;
+        timeSeriesPoints = idportenLoginMapper.mapMeasurements(idportenLoginFields, timeRef);
+
+        Assertions.assertEquals(1, timeSeriesPoints.size());
+    }
+
+    @Test
+    public void shouldRemoveSumRowInIdportenFieldsIfLargerThanTwoRows(){
+
+        List<IdportenLoginField> idportenLoginFields = new ArrayList<>();
+        idportenLoginFields.add(createIdportenLoginField("GotTL", "TE-entityId-not-in-splist", "TE", null, "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
+        idportenLoginFields.add(createIdportenLoginField("GotTL2", "TE-entityId-not-in-splist2", "TE2", null, "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
+        idportenLoginFields.add(createIdportenLoginField("GotTL3", "TE-entityId-not-in-splist3", "TE3", null, "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
+        idportenLoginFields.add(createIdportenLoginField("GotTL4", "TE-entityId-not-in-splist4", "TE4", null, "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
+        idportenLoginFields.add(createIdportenLoginField("Sum", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
+        IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
+
+        List<TimeSeriesPoint> timeSeriesPoints;
+        timeSeriesPoints = idportenLoginMapper.mapMeasurements(idportenLoginFields, timeRef);
+
+        Assertions.assertEquals(4, timeSeriesPoints.size());
+    }
+
+    @Test
+    public void shouldNotRemoveSumRowInIdportenFieldsIfLessThanTwoRows(){
+
+        List<IdportenLoginField> idportenLoginFields = new ArrayList<>();
+        idportenLoginFields.add(createIdportenLoginField("Sum", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
+        IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
+
+        List<TimeSeriesPoint> timeSeriesPoints;
+        timeSeriesPoints = idportenLoginMapper.mapMeasurements(idportenLoginFields, timeRef);
+
+        Assertions.assertEquals(1, timeSeriesPoints.size());
+    }
+
+
     private Map<String, String> createCategoriesMap(String TL, String TLentityId, String TE, String TEentityId){
         Map<String, String> categoriesExpected = new HashMap<>();
         categoriesExpected.put("TL", TL);

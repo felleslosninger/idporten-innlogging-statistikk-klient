@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -50,9 +49,8 @@ public class DataTransfer {
                 if (r1Report.get(0).getValues().size() == 0) {
                     logger.info("Report from R1 contains no data for {}, skip transfer to statistics", from);
                 } else {
-                    logger.info("Report from R1 contains {} rows of data for {}, transfer to statistics", r1Report.size(), from);
-                    List<IdportenLoginField> fields = new ArrayList<>(r1Report);
-                    List<TimeSeriesPoint> timeSeriesPoints = idportenLoginMapper.mapMeasurements(fields, from);
+                    List<TimeSeriesPoint> timeSeriesPoints = idportenLoginMapper.mapMeasurements(r1Report, from);
+                    logger.info("Report from R1 contains {} rows of data for {}, transfer to statistics", timeSeriesPoints.size(), from);
                     ingestClient.ingest(timeSeriesDefinition, timeSeriesPoints);
                 }
                 from = from.plusHours(1);
@@ -62,6 +60,6 @@ public class DataTransfer {
 
     private boolean missingDataForNextHour(ZonedDateTime timestamp) {
         logger.info("check if data for {}", timestamp);
-        return !(asList(fetch.perform(timestamp.plusHours(1))).get(0).getValues().size() != 0);
+        return asList(fetch.perform(timestamp.plusHours(1))).get(0).getValues().size() == 0;
     }
 }

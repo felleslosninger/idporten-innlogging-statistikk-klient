@@ -20,7 +20,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <difi.docker.registry>docker.io/difi</difi.docker.registry>
+        <no.difi.jenkins-pipeline.docker-registry>placeholder</no.difi.jenkins-pipeline.docker-registry>
         <artifactory.url>http://eid-artifactory.dmz.local:8080/artifactory</artifactory.url>
         <ingestclient.version>2017-11-28-0928-7bf9210</ingestclient.version>
     </properties>
@@ -133,7 +133,7 @@
                                     </inline>
                                 </assembly>
                             </build>
-                            <name>${difi.docker.registry}/${project.artifactId}:${project.version}</name>
+                            <name>${no.difi.jenkins-pipeline.docker-registry}/${project.artifactId}:${project.version}</name>
                             <run>
                                 <ports>
                                     <port>9000:8080</port>
@@ -170,7 +170,7 @@
                         <configuration>
                             <images>
                                 <image>
-                                    <name>${difi.docker.registry}/${project.artifactId}:${project.version}</name>
+                                    <name>${no.difi.jenkins-pipeline.docker-registry}/${project.artifactId}:${project.version}</name>
                                     <build>
                                         <labels>
                                             <label>ScmId=${buildNumber}</label>

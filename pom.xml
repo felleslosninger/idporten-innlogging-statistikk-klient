@@ -20,7 +20,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <no.difi.jenkins-pipeline.docker-registry>placeholder</no.difi.jenkins-pipeline.docker-registry>
+        <no.difi.jenkins-pipeline.docker-registry>local</no.difi.jenkins-pipeline.docker-registry>
         <artifactory.url>http://eid-artifactory.dmz.local:8080/artifactory</artifactory.url>
         <ingestclient.version>2017-11-28-0928-7bf9210</ingestclient.version>
     </properties>

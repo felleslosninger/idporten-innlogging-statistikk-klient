@@ -12,10 +12,13 @@ services:
       - source: idporten-innlogging-statistikk-klient_ingest-password
         target: idporten-innlogging-stat-pumba
     networks:
-      - statistics
+      - net
+      - statistics_net
 
 networks:
-  statistics:
+  net:
+    driver: overlay
+  statistics_net:
     external: true
 
 secrets:

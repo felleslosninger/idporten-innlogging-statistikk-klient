@@ -41,16 +41,15 @@ public class DataTransfer {
         }
 
         if (!missingDataForNextHour(to)) {
-
+            logger.info("Transfering data for {}", DateTimeFormatter.ofPattern("yyyy-MM-dd - hh:00").format(from) + " to " + DateTimeFormatter.ofPattern("yyyy-MM-dd - hh:00").format(to));
             while (from.isBefore(to) || from.isEqual(to)) {
-                logger.info("Transfering data for {}", DateTimeFormatter.ofPattern("yyyy-MM-dd - hh:00").format(from));
+
                 final List<IdportenLoginField> r1Report = asList(fetch.perform(from));
                 if (r1Report.isEmpty()) throw new FetchError("R1 report is empty");
                 if (r1Report.get(0).getValues().size() == 0) {
-                    logger.info("Report from R1 contains no data for {}, skip transfer to statistics", from);
+                    logger.warn("Report from R1 contains no data for {}, skip transfer to statistics", from);
                 } else {
                     List<TimeSeriesPoint> timeSeriesPoints = idportenLoginMapper.mapMeasurements(r1Report, from);
-                    logger.info("Report from R1 contains {} rows of data for {}, transfer to statistics", timeSeriesPoints.size(), from);
                     ingestClient.ingest(timeSeriesDefinition, timeSeriesPoints);
                 }
                 from = from.plusHours(1);
@@ -59,7 +58,6 @@ public class DataTransfer {
     }
 
     private boolean missingDataForNextHour(ZonedDateTime timestamp) {
-        logger.info("check if data for {}", timestamp);
         return asList(fetch.perform(timestamp.plusHours(1))).get(0).getValues().size() == 0;
     }
 }

@@ -1,13 +1,13 @@
 package no.difi.statistikk.service;
 
 import no.difi.statistics.ingest.client.IngestClient;
-import no.difi.statistics.ingest.client.model.TimeSeriesDefinition;
 import no.difi.statistics.ingest.client.model.TimeSeriesPoint;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import static no.difi.statistics.ingest.client.model.MeasurementDistance.hours;
+import static no.difi.statistics.ingest.client.model.TimeSeriesDefinition.timeSeriesDefinition;
 
 public class LastDatapoint {
     private final IngestClient ingestClient;
@@ -18,7 +18,7 @@ public class LastDatapoint {
     }
 
     public ZonedDateTime get(String seriesName) {
-        return ingestClient.last(TimeSeriesDefinition.builder().name(seriesName).distance(hours))
+        return ingestClient.last(timeSeriesDefinition().name(seriesName).distance(hours))
                 .map(TimeSeriesPoint::getTimestamp).orElse(baseTime);
     }
 }

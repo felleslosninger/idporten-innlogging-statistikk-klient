@@ -16,6 +16,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static no.difi.statistics.ingest.client.model.MeasurementDistance.hours;
+import static no.difi.statistics.ingest.client.model.TimeSeriesDefinition.timeSeriesDefinition;
 
 public class DataTransfer {
 
@@ -24,7 +25,7 @@ public class DataTransfer {
     private final IdportenLoginMapper idportenLoginMapper;
     private final IngestClient ingestClient;
 
-    private static final TimeSeriesDefinition timeSeriesDefinition = TimeSeriesDefinition.builder()
+    private static final TimeSeriesDefinition timeSeriesDefinition = timeSeriesDefinition()
             .name("idporten-innlogging")
             .distance(hours);
 

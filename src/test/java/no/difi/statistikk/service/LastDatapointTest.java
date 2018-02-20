@@ -10,10 +10,11 @@ import org.mockito.Mock;
 import java.net.MalformedURLException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Optional;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 import static java.time.ZonedDateTime.now;
+import static no.difi.statistics.ingest.client.model.TimeSeriesPoint.timeSeriesPoint;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Matchers.anyObject;
@@ -66,7 +67,7 @@ public class LastDatapointTest {
 
 
     private Optional<TimeSeriesPoint> createResponseOk(ZonedDateTime dateTime) {
-        return Optional.of(TimeSeriesPoint.builder()
+        return Optional.of(timeSeriesPoint()
                 .timestamp(dateTime)
                 .measurement("d5_8", 31)
                 .measurement("d5_11", 63)

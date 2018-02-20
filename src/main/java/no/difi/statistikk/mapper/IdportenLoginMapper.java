@@ -1,15 +1,19 @@
 package no.difi.statistikk.mapper;
 
-import no.difi.statistics.ingest.client.model.Measurement;
 import no.difi.statistics.ingest.client.model.TimeSeriesPoint;
-import no.difi.statistikk.domain.*;
+import no.difi.statistikk.domain.IdportenLoginField;
+import no.difi.statistikk.domain.IdportenLoginValue;
+import no.difi.statistikk.domain.ServiceProvider;
 import no.difi.statistikk.service.ServiceProviderFetch;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static no.difi.statistics.ingest.client.model.TimeSeriesPoint.timeSeriesPoint;
 
 public class IdportenLoginMapper {
 
@@ -35,12 +39,16 @@ public class IdportenLoginMapper {
         List<ServiceProvider> serviceProviders = serviceProviderFetch.perform();
         fields = removeSumFromReport(r1fields);
         return fields.stream()
-                .map(field -> TimeSeriesPoint.builder()
-                        .timestamp(dateTime)
-                        .categories(mapCategoriesForRow(field, serviceProviders))
-                        .measurements(mapMeasurementsForRow(field))
-                        .build())
+                .map(field -> mapPointForRow(dateTime, field, serviceProviders))
                 .collect(Collectors.toList());
+    }
+
+    private TimeSeriesPoint mapPointForRow(ZonedDateTime timestamp, IdportenLoginField field, List<ServiceProvider> serviceProviders) {
+        TimeSeriesPoint.MeasurementOrCategoryOrBuildEntry point = timeSeriesPoint()
+                .timestamp(timestamp)
+                .measurements(mapMeasurementsForRow(field));
+        mapCategoriesForRow(field, serviceProviders).forEach(point::category);
+        return point.build();
     }
 
     private Map<String, String> mapCategoriesForRow(IdportenLoginField field, List<ServiceProvider> serviceProviders) {
@@ -50,15 +58,14 @@ public class IdportenLoginMapper {
         return cv.mapCategories();
     }
 
-    private List<Measurement> mapMeasurementsForRow(IdportenLoginField field) {
-        List<Measurement> measurements = new ArrayList<>();
+    private Map<String, Long> mapMeasurementsForRow(IdportenLoginField field) {
+        Map<String, Long> measurements = new HashMap<>();
         List<IdportenLoginValue> idpv = field.getValues();
 
         for (int valueIndex = 4; valueIndex < idpv.size(); valueIndex++) {
             String id = measurementsIds.get(valueIndex - 4);
             Long value = idpv.get(valueIndex).getValueAsLong();
-            Measurement measurement = new Measurement(id, value);
-            measurements.add(measurement);
+            measurements.put(id, value);
         }
         return measurements;
     }

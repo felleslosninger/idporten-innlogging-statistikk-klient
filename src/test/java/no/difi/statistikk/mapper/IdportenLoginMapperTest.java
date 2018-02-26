@@ -42,7 +42,7 @@ public class IdportenLoginMapperTest {
     @Test
     public void whenTEnotFoundItShouldMapToTLifFoundInSplist() {
 
-        Map<String, String> categoriesExpected = createCategoriesMap("GotTL", "8765", "GotTL", "8765" );
+        Map<String, String> categoriesExpected = createCategoriesMap("GotTL", "8765", "GotTL", "8765", "TL-entityID", "TL-entityID" );
 
         Map<String, Long> measurementsExpected = getBasicExpectedMeasurements();
         List<TimeSeriesPoint> tspExpected = new ArrayList<>();
@@ -61,7 +61,7 @@ public class IdportenLoginMapperTest {
     @Test
     public void whenTEentityIdEmptyMapTLorgnumToTEentityId() {
 
-        Map<String, String> categoriesExpected = createCategoriesMap("GotTL", "5678", "GotTL", "5678" );
+        Map<String, String> categoriesExpected = createCategoriesMap("GotTL", "5678", "GotTL", "5678", "test_te_id", "test_te_id" );
 
         Map<String, Long> measurementsExpected = getBasicExpectedMeasurements();
         List<TimeSeriesPoint> tspExpected = new ArrayList<>();
@@ -78,7 +78,7 @@ public class IdportenLoginMapperTest {
 
     @Test
     public void shouldMapIdportenFieldValuesToTimeSeriesPoints() {
-        Map<String, String> categoriesExpected = createCategoriesMap("Direktoratet for forvaltning og ikt", "1234", "cucumber-samltest", "4321" );
+        Map<String, String> categoriesExpected = createCategoriesMap("Direktoratet for forvaltning og ikt", "1234", "cucumber-samltest", "4321", "autotest-systest-sptest1", "cucumber-samltest_id" );
 
         Map<String, Long> measurementsExpected = getBasicExpectedMeasurements();
         List<TimeSeriesPoint> tspExpected = new ArrayList<>();
@@ -95,7 +95,7 @@ public class IdportenLoginMapperTest {
 
     @Test
     public void whenOrgnumNotFoundSetOrgnumCatEmpty(){
-        Map<String, String> categoriesExpected = createCategoriesMap("GotTL", "", "GotTL", "" );
+        Map<String, String> categoriesExpected = createCategoriesMap("GotTL", "", "GotTL", "", "TE-entityId-not-in-splist", "TL-entityId-not-in-splist" );
 
         Map<String, Long> measurementsExpected = getBasicExpectedMeasurements();
         List<TimeSeriesPoint> tspExpected = new ArrayList<>();
@@ -112,48 +112,14 @@ public class IdportenLoginMapperTest {
 
     @Test
     public void handleThatTEandTEentitiIDareNull(){
-        Map<String, String> categoriesExpected = createCategoriesMap("GotTL", "", "GotTL", "" );
+        Map<String, String> categoriesExpected = createCategoriesMap("GotTL", "", "GotTL", "", "TE-entityId-not-in-splist", "TE-entityId-not-in-splist" );
 
         Map<String, Long> measurementsExpected = getBasicExpectedMeasurements();
         List<TimeSeriesPoint> tspExpected = new ArrayList<>();
         tspExpected.add(point(timeRef, measurementsExpected, categoriesExpected));
 
         List<IdportenLoginField> idportenLoginFields = new ArrayList<>();
-        idportenLoginFields.add(createIdportenLoginField("GotTL", "TE-entityId-not-in-splist", null, null, "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
-
-        IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
-        List<TimeSeriesPoint> tsp = idportenLoginMapper.mapMeasurements(idportenLoginFields, timeRef);
-
-        Assertions.assertTrue(tsp.equals(tspExpected));
-    }
-
-    @Test
-    public void handleThatTEareNull(){
-        Map<String, String> categoriesExpected = createCategoriesMap("GotTL", "", "GotTL", "5678" );
-
-        Map<String, Long> measurementsExpected = getBasicExpectedMeasurements();
-        List<TimeSeriesPoint> tspExpected = new ArrayList<>();
-        tspExpected.add(point(timeRef, measurementsExpected, categoriesExpected));
-
-        List<IdportenLoginField> idportenLoginFields = new ArrayList<>();
-        idportenLoginFields.add(createIdportenLoginField("GotTL", "TE-entityId-not-in-splist", null, "test_te_id", "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
-
-        IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
-        List<TimeSeriesPoint> tsp = idportenLoginMapper.mapMeasurements(idportenLoginFields, timeRef);
-
-        Assertions.assertTrue(tsp.equals(tspExpected));
-    }
-
-    @Test
-    public void handleThatTEentityIdareNull(){
-        Map<String, String> categoriesExpected = createCategoriesMap("GotTL", "", "TE", "");
-
-        Map<String, Long> measurementsExpected = getBasicExpectedMeasurements();
-        List<TimeSeriesPoint> tspExpected = new ArrayList<>();
-        tspExpected.add(point(timeRef, measurementsExpected, categoriesExpected));
-
-        List<IdportenLoginField> idportenLoginFields = new ArrayList<>();
-        idportenLoginFields.add(createIdportenLoginField("GotTL", "TE-entityId-not-in-splist", "TE", null, "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
+        idportenLoginFields.add(createIdportenLoginField("GotTL", "TE-entityId-not-in-splist", "", "", "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
 
         IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
         List<TimeSeriesPoint> tsp = idportenLoginMapper.mapMeasurements(idportenLoginFields, timeRef);
@@ -165,7 +131,7 @@ public class IdportenLoginMapperTest {
     public void shouldRemoveSumRowInIdportenFieldsIfTwoRows(){
 
         List<IdportenLoginField> idportenLoginFields = new ArrayList<>();
-        idportenLoginFields.add(createIdportenLoginField("GotTL", "TE-entityId-not-in-splist", "TE", null, "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
+        idportenLoginFields.add(createIdportenLoginField("GotTL", "TE-entityId-not-in-splist", "TE", "", "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
         idportenLoginFields.add(createIdportenLoginField("Sum", "0", "0", "0", "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
         IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
 
@@ -179,10 +145,10 @@ public class IdportenLoginMapperTest {
     public void shouldRemoveSumRowInIdportenFieldsIfLargerThanTwoRows(){
 
         List<IdportenLoginField> idportenLoginFields = new ArrayList<>();
-        idportenLoginFields.add(createIdportenLoginField("GotTL", "TE-entityId-not-in-splist", "TE", null, "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
-        idportenLoginFields.add(createIdportenLoginField("GotTL2", "TE-entityId-not-in-splist2", "TE2", null, "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
-        idportenLoginFields.add(createIdportenLoginField("GotTL3", "TE-entityId-not-in-splist3", "TE3", null, "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
-        idportenLoginFields.add(createIdportenLoginField("GotTL4", "TE-entityId-not-in-splist4", "TE4", null, "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
+        idportenLoginFields.add(createIdportenLoginField("GotTL", "TE-entityId-not-in-splist", "TE", "", "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
+        idportenLoginFields.add(createIdportenLoginField("GotTL2", "TE-entityId-not-in-splist2", "TE2", "", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
+        idportenLoginFields.add(createIdportenLoginField("GotTL3", "TE-entityId-not-in-splist3", "TE3", "", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
+        idportenLoginFields.add(createIdportenLoginField("GotTL4", "TE-entityId-not-in-splist4", "TE4", "", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
         idportenLoginFields.add(createIdportenLoginField("Sum", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
         IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
 
@@ -205,13 +171,32 @@ public class IdportenLoginMapperTest {
         Assertions.assertEquals(1, timeSeriesPoints.size());
     }
 
+    @Test
+    public void TEentityIdShouldFallBackToTLentityIdIfEmpty(){
+        Map<String, String> categoriesExpected = createCategoriesMap("GotTL", "", "GotTL", "", "GotTLentityId", "GotTLentityId" );
 
-    private Map<String, String> createCategoriesMap(String TL, String TLentityId, String TE, String TEentityId){
+        Map<String, Long> measurementsExpected = getBasicExpectedMeasurements();
+        List<TimeSeriesPoint> tspExpected = new ArrayList<>();
+        tspExpected.add(point(timeRef, measurementsExpected, categoriesExpected));
+
+        List<IdportenLoginField> idportenLoginFields = new ArrayList<>();
+        idportenLoginFields.add(createIdportenLoginField("GotTL", "GotTLentityId", "", "", "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
+
+        IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
+        List<TimeSeriesPoint> tsp = idportenLoginMapper.mapMeasurements(idportenLoginFields, timeRef);
+
+        Assertions.assertTrue(tsp.equals(tspExpected));
+    }
+
+
+    private Map<String, String> createCategoriesMap(String TL, String TLorgnum, String TE, String TEorgnum, String TLEntityId, String TEEntityId){
         Map<String, String> categoriesExpected = new HashMap<>();
         categoriesExpected.put("TL", TL);
-        categoriesExpected.put("TL-orgnum", TLentityId);
+        categoriesExpected.put("TL-orgnum", TLorgnum);
         categoriesExpected.put("TE", TE);
-        categoriesExpected.put("TE-orgnum", TEentityId);
+        categoriesExpected.put("TE-orgnum", TEorgnum);
+        categoriesExpected.put("TL-entityId", TLEntityId);
+        categoriesExpected.put("TE-entityId", TEEntityId);
         return categoriesExpected;
     }
 

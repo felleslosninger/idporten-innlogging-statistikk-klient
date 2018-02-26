@@ -20,43 +20,22 @@ public class CategoryMapper {
     public Map<String, String> mapCategories() {
         Map<String, String> categoriesMap = new HashMap<>();
 
-        for (int valueCol = 0; valueCol < 4; valueCol++) {
-            String mappedValue;
-            String mappedCategory;
+        String tjenesteleverandør = idpv.get(0).getValue();
+        String tjenesteleverandørId = idpv.get(1).getValue();
+        String tjenesteeier = idpv.get(2).getValue();
+        String tjenesteeierId = idpv.get(3).getValue();
 
-            switch (valueCol) {
-                case 0: {
-                    mappedValue = idpv.get(valueCol).getValue();
-                    mappedCategory = "TL";
-                    categoriesMap.put(mappedCategory, mappedValue);
-                }
-                break;
-                case 1: {
-                    mappedValue = getOrgnumForServiceProvider(idpv.get(valueCol).getValue());
-                    mappedCategory = "TL-orgnum";
-                    categoriesMap.put(mappedCategory, mappedValue);
-                }
-                break;
-                case 2: {
-                    mappedValue = idpv.get(valueCol).getValue();
-                    if (null == mappedValue || mappedValue.isEmpty()){
-                        mappedValue = idpv.get(0).getValue();
-                    }
-                    mappedCategory = "TE";
-                    categoriesMap.put(mappedCategory, mappedValue);
-                }
-                break;
-                case 3: {
-                    mappedValue = getOrgnumForServiceProvider(idpv.get(valueCol).getValue());
-                    if (null == mappedValue || mappedValue.isEmpty()){
-                        mappedValue = getOrgnumForServiceProvider(idpv.get(1).getValue());
-                    }
-                    mappedCategory = "TE-orgnum";
-                    categoriesMap.put(mappedCategory, mappedValue);
-                }
-            }
-        }
+        categoriesMap.put("TL", tjenesteleverandør);
+        categoriesMap.put("TL-orgnum", getOrgnumForServiceProvider(tjenesteleverandørId));
+        categoriesMap.put("TL-entityId", tjenesteleverandørId);
+        categoriesMap.put("TE", withFallback(tjenesteeier, tjenesteleverandør));
+        categoriesMap.put("TE-orgnum", getOrgnumForServiceProvider(withFallback(tjenesteeierId, tjenesteleverandørId)));
+        categoriesMap.put("TE-entityId", withFallback(tjenesteeierId, tjenesteleverandørId));
         return categoriesMap;
+    }
+
+    private String withFallback(String value, String fallback) {
+        return !value.isEmpty() ? value : fallback;
     }
 
     private String getOrgnumForServiceProvider(String EntityId) {

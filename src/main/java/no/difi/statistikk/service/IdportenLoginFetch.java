@@ -19,7 +19,7 @@ public class IdportenLoginFetch {
     public IdportenLoginFetch(URL baseUrl, RestTemplate restTemplate) {
         this.uriTemplate = new UriTemplate(
                 baseUrl + "/idporten-admin/statistics/statistics/json/" +
-                "{retportType}/" +
+                "{reportType}/" +
                 "{fromYear}/{fromMonth}/{fromDay}/{fromHour}/"
         );
         this.restTemplate = restTemplate;

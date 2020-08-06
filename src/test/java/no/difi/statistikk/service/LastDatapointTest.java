@@ -8,13 +8,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.net.MalformedURLException;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import static java.time.ZonedDateTime.now;
 import static no.difi.statistics.ingest.client.model.TimeSeriesPoint.timeSeriesPoint;
+import static no.difi.statistikk.service.LastDatapoint.baseTime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Matchers.anyObject;
@@ -37,10 +37,10 @@ public class LastDatapointTest {
     }
 
     @Test
-    @DisplayName("It should return ZoneDateTime set to 2015-01-01-0-0-0-0")
+    @DisplayName("It should return ZoneDateTime set to baseTime")
     public void shouldReturnNullWhenResponseCode200AndEmptyDataset() {
         when(ingestClientMock.last(anyObject())).thenReturn(Optional.empty());
-        final ZonedDateTime expected = ZonedDateTime.of(2011, 8, 14, 0, 0, 0, 0, ZoneId.of("UTC"));
+        final ZonedDateTime expected = baseTime;
         assertEquals(expected, lastDatapoint.get(seriesId).truncatedTo(ChronoUnit.HOURS));
     }
 

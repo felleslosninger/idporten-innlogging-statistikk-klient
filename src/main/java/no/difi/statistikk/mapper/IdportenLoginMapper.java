@@ -18,7 +18,7 @@ import static no.difi.statistics.ingest.client.model.TimeSeriesPoint.timeSeriesP
 public class IdportenLoginMapper {
 
     private final ServiceProviderFetch serviceProviderFetch;
-    private List<String> measurementsIds = new ArrayList<>();
+    protected List<String> measurementsIds = new ArrayList<>();
 
     public IdportenLoginMapper(ServiceProviderFetch serviceProviderFetch) {
         this.serviceProviderFetch = serviceProviderFetch;
@@ -31,6 +31,8 @@ public class IdportenLoginMapper {
         measurementsIds.add("BankID");
         measurementsIds.add("eIDAS");
         measurementsIds.add("BankID mobil");
+        measurementsIds.add("MinID passport");
+        measurementsIds.add("Buypass passport");
         measurementsIds.add("Antall");
     }
 
@@ -62,7 +64,13 @@ public class IdportenLoginMapper {
         Map<String, Long> measurements = new HashMap<>();
         List<IdportenLoginValue> idpv = field.getValues();
 
+
+        if(measurementsIds.size() != idpv.size() - 4){
+            throw new RuntimeException("Antall eID-er i statistikken i idporten-admin/event har endra seg! Ny eID i ID-porten? Registrerte eId-ar i idporten-innlogging-statistikk-klient: " + measurementsIds);
+        }
         for (int valueIndex = 4; valueIndex < idpv.size(); valueIndex++) {
+
+
             String id = measurementsIds.get(valueIndex - 4);
             Long value = idpv.get(valueIndex).getValueAsLong();
             measurements.put(id, value);

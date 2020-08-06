@@ -21,12 +21,14 @@ import java.util.List;
 import java.util.Map;
 
 import static no.difi.statistics.ingest.client.model.TimeSeriesPoint.timeSeriesPoint;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class IdportenLoginMapperTest {
 
-    private final ZonedDateTime timeRef = ZonedDateTime.of(LocalDate.of(2017, 1, 4), LocalTime.of(9, 05), ZoneId.of("Europe/Paris"));
+    private final ZonedDateTime timeRef = ZonedDateTime.of(LocalDate.of(2020, 1, 4), LocalTime.of(9, 05), ZoneId.of("Europe/Paris"));
     private List<ServiceProvider> serviceProviders;
 
     @Mock
@@ -49,12 +51,12 @@ public class IdportenLoginMapperTest {
         tspExpected.add(point(timeRef, measurementsExpected, categoriesExpected));
 
         List<IdportenLoginField> idportenLoginFields = new ArrayList<>();
-        idportenLoginFields.add(createIdportenLoginField("GotTL", "TL-entityID", "", "", "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
+        idportenLoginFields.add(createIdportenLoginField("GotTL", "TL-entityID", "", "", "12", "13", "14", "15", "16", "17", "0", "18", "19", "0", "0", "124"));
 
         IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
         List<TimeSeriesPoint> tsp = idportenLoginMapper.mapMeasurements(idportenLoginFields, timeRef);
 
-        Assertions.assertTrue(tsp.equals(tspExpected));
+        assertTrue(tsp.equals(tspExpected));
 
     }
 
@@ -68,12 +70,12 @@ public class IdportenLoginMapperTest {
         tspExpected.add(point(timeRef, measurementsExpected, categoriesExpected));
 
         List<IdportenLoginField> idportenLoginFields = new ArrayList<>();
-        idportenLoginFields.add(createIdportenLoginField("GotTL", "test_te_id", "", "", "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
+        idportenLoginFields.add(createIdportenLoginField("GotTL", "test_te_id", "", "", "12", "13", "14", "15", "16", "17", "0", "18", "19", "0", "0", "124"));
 
         IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
         List<TimeSeriesPoint> tsp = idportenLoginMapper.mapMeasurements(idportenLoginFields, timeRef);
 
-        Assertions.assertTrue(tsp.equals(tspExpected));
+        assertTrue(tsp.equals(tspExpected));
     }
 
     @Test
@@ -85,12 +87,12 @@ public class IdportenLoginMapperTest {
         tspExpected.add(point(timeRef, measurementsExpected, categoriesExpected));
 
         List<IdportenLoginField> idportenLoginFields = new ArrayList<>();
-        idportenLoginFields.add(createIdportenLoginField("Direktoratet for forvaltning og ikt", "autotest-systest-sptest1", "cucumber-samltest", "cucumber-samltest_id", "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
+        idportenLoginFields.add(createIdportenLoginField("Direktoratet for forvaltning og ikt", "autotest-systest-sptest1", "cucumber-samltest", "cucumber-samltest_id", "12", "13", "14", "15", "16", "17", "0", "18", "19", "0", "0", "124"));
 
         IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
         List<TimeSeriesPoint> tsp = idportenLoginMapper.mapMeasurements(idportenLoginFields, timeRef);
 
-        Assertions.assertTrue(tsp.equals(tspExpected));
+        assertTrue(tsp.equals(tspExpected));
     }
 
     @Test
@@ -102,12 +104,12 @@ public class IdportenLoginMapperTest {
         tspExpected.add(point(timeRef, measurementsExpected, categoriesExpected));
 
         List<IdportenLoginField> idportenLoginFields = new ArrayList<>();
-        idportenLoginFields.add(createIdportenLoginField("GotTL", "TE-entityId-not-in-splist", "", "TL-entityId-not-in-splist", "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
+        idportenLoginFields.add(createIdportenLoginField("GotTL", "TE-entityId-not-in-splist", "", "TL-entityId-not-in-splist", "12", "13", "14", "15", "16", "17", "0", "18", "19", "0", "0", "124"));
 
         IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
         List<TimeSeriesPoint> tsp = idportenLoginMapper.mapMeasurements(idportenLoginFields, timeRef);
 
-        Assertions.assertTrue(tsp.equals(tspExpected));
+        assertTrue(tsp.equals(tspExpected));
     }
 
     @Test
@@ -119,20 +121,20 @@ public class IdportenLoginMapperTest {
         tspExpected.add(point(timeRef, measurementsExpected, categoriesExpected));
 
         List<IdportenLoginField> idportenLoginFields = new ArrayList<>();
-        idportenLoginFields.add(createIdportenLoginField("GotTL", "TE-entityId-not-in-splist", "", "", "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
+        idportenLoginFields.add(createIdportenLoginField("GotTL", "TE-entityId-not-in-splist", "", "", "12", "13", "14", "15", "16", "17", "0", "18", "19", "0", "0", "124"));
 
         IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
         List<TimeSeriesPoint> tsp = idportenLoginMapper.mapMeasurements(idportenLoginFields, timeRef);
 
-        Assertions.assertTrue(tsp.equals(tspExpected));
+        assertTrue(tsp.equals(tspExpected));
     }
 
     @Test
     public void shouldRemoveSumRowInIdportenFieldsIfTwoRows(){
 
         List<IdportenLoginField> idportenLoginFields = new ArrayList<>();
-        idportenLoginFields.add(createIdportenLoginField("GotTL", "TE-entityId-not-in-splist", "TE", "", "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
-        idportenLoginFields.add(createIdportenLoginField("Sum", "0", "0", "0", "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
+        idportenLoginFields.add(createIdportenLoginField("GotTL", "TE-entityId-not-in-splist", "TE", "", "12", "13", "14", "15", "16", "17", "0", "18", "19", "0", "0", "124"));
+        idportenLoginFields.add(createIdportenLoginField("Sum", "0", "0", "0", "12", "13", "14", "15", "16", "17", "0", "18", "19", "0", "0", "124"));
         IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
 
         List<TimeSeriesPoint> timeSeriesPoints;
@@ -145,10 +147,10 @@ public class IdportenLoginMapperTest {
     public void shouldRemoveSumRowInIdportenFieldsIfLargerThanTwoRows(){
 
         List<IdportenLoginField> idportenLoginFields = new ArrayList<>();
-        idportenLoginFields.add(createIdportenLoginField("GotTL", "TE-entityId-not-in-splist", "TE", "", "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
-        idportenLoginFields.add(createIdportenLoginField("GotTL2", "TE-entityId-not-in-splist2", "TE2", "", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
-        idportenLoginFields.add(createIdportenLoginField("GotTL3", "TE-entityId-not-in-splist3", "TE3", "", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
-        idportenLoginFields.add(createIdportenLoginField("GotTL4", "TE-entityId-not-in-splist4", "TE4", "", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
+        idportenLoginFields.add(createIdportenLoginField("GotTL", "TE-entityId-not-in-splist", "TE", "", "12", "13", "14", "15", "16", "17", "0", "18", "19", "0", "0","124"));
+        idportenLoginFields.add(createIdportenLoginField("GotTL2", "TE-entityId-not-in-splist2", "TE2", "", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0","0"));
+        idportenLoginFields.add(createIdportenLoginField("GotTL3", "TE-entityId-not-in-splist3", "TE3", "", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0","0"));
+        idportenLoginFields.add(createIdportenLoginField("GotTL4", "TE-entityId-not-in-splist4", "TE4", "", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0","0"));
         idportenLoginFields.add(createIdportenLoginField("Sum", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
         IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
 
@@ -162,7 +164,7 @@ public class IdportenLoginMapperTest {
     public void shouldNotRemoveSumRowInIdportenFieldsIfLessThanTwoRows(){
 
         List<IdportenLoginField> idportenLoginFields = new ArrayList<>();
-        idportenLoginFields.add(createIdportenLoginField("Sum", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
+        idportenLoginFields.add(createIdportenLoginField("Sum", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0"));
         IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
 
         List<TimeSeriesPoint> timeSeriesPoints;
@@ -180,12 +182,34 @@ public class IdportenLoginMapperTest {
         tspExpected.add(point(timeRef, measurementsExpected, categoriesExpected));
 
         List<IdportenLoginField> idportenLoginFields = new ArrayList<>();
-        idportenLoginFields.add(createIdportenLoginField("GotTL", "GotTLentityId", "", "", "12", "13", "14", "15", "16", "17", "0", "18", "19", "124"));
+        idportenLoginFields.add(createIdportenLoginField("GotTL", "GotTLentityId", "", "", "12", "13", "14", "15", "16", "17", "0", "18", "19", "0", "0","124"));
 
         IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
         List<TimeSeriesPoint> tsp = idportenLoginMapper.mapMeasurements(idportenLoginFields, timeRef);
 
-        Assertions.assertTrue(tsp.equals(tspExpected));
+        assertTrue(tsp.equals(tspExpected));
+    }
+
+    @Test
+    public void shouldFailIfNewEidInDataButNotInCode(){
+        Map<String, String> categoriesExpected = createCategoriesMap("GotTL", "", "GotTL", "", "GotTLentityId", "GotTLentityId" );
+
+        Map<String, Long> measurementsExpected = getBasicExpectedMeasurements();
+        List<TimeSeriesPoint> tspExpected = new ArrayList<>();
+        tspExpected.add(point(timeRef, measurementsExpected, categoriesExpected));
+
+        List<IdportenLoginField> idportenLoginFields = new ArrayList<>();
+        idportenLoginFields.add(createIdportenLoginField("GotTL", "GotTLentityId", "", "", "12", "13", "14", "15", "16", "17", "0", "18", "19", "0", "0", "0", "124"));
+
+        IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
+
+        RuntimeException thrown = assertThrows(
+                RuntimeException.class,
+                () -> idportenLoginMapper.mapMeasurements(idportenLoginFields, timeRef),
+                "Expected doThing() to throw, but it didn't"
+        );
+
+        assertTrue(thrown.getMessage().contains("Antall eID-er"));
     }
 
 
@@ -211,6 +235,8 @@ public class IdportenLoginMapperTest {
         measurementsExpected.put("BankID", 0L);
         measurementsExpected.put("eIDAS", 18L);
         measurementsExpected.put("BankID mobil", 19L);
+        measurementsExpected.put("MinID passport", 0L);
+        measurementsExpected.put("Buypass passport", 0L);
         measurementsExpected.put("Antall", 124L);
         return measurementsExpected;
     }

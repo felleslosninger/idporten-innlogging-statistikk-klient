@@ -16,31 +16,21 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 
 @EnableAutoConfiguration
 @EnableScheduling
 @Configuration
 public class Config {
 
-    private static final int readTimeout = 15000;
-    private static final int connTimeout = 60000;
-    private static String ingestPassword;
-    private URL idportenAdminUrl;
-    private URL statisticsIngestUrl;
-
-    private final String reportOwner = "991825827";
 
     @Autowired
-    public Config(Environment environment) throws IOException {
-        idportenAdminUrl = environment.getRequiredProperty("url.base.admin", URL.class);
-        statisticsIngestUrl = environment.getRequiredProperty("url.base.ingest.statistikk", URL.class);
-        ingestPassword = new String(Files.readAllBytes(Paths.get(environment.getRequiredProperty("file.base.difi-statistikk"))));
+    private Environment environment;
+
+    @Bean
+    public Properties properties() {
+        return new Properties(environment);
     }
+
 
     @Bean
     public RestTemplate restTemplate() {
@@ -49,12 +39,12 @@ public class Config {
 
     @Bean
     public ServiceProviderFetch spFetch() {
-        return new ServiceProviderFetch(idportenAdminUrl, restTemplate());
+        return new ServiceProviderFetch(properties().getIdportenAdminUrl(), restTemplate());
     }
 
     @Bean
     public IdportenLoginFetch idportenLoginFetch() {
-        return new IdportenLoginFetch(idportenAdminUrl, restTemplate());
+        return new IdportenLoginFetch(properties().getIdportenAdminUrl(), restTemplate());
     }
 
     @Bean
@@ -69,12 +59,12 @@ public class Config {
 
     @Bean
     public LastDatapoint lastDatapoint() {
-        return new LastDatapoint(ingestClient());
+        return new LastDatapoint(ingestClient(), properties());
     }
 
     @Bean
     public IngestClient ingestClient() {
-        return new IngestClient(statisticsIngestUrl, readTimeout, connTimeout, reportOwner, reportOwner, ingestPassword);
+        return new IngestClient(properties().getStatisticsIngestUrl(), properties().getReadTimeout() , properties().getConnTimeout(), properties().getReportOwner(), properties().getReportOwner(), properties().getIngestPassword());
     }
 
     @Bean

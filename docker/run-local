@@ -46,6 +46,7 @@ configString() {
     echo \
 "url.base.admin=https://admin.difi.eon.no
 url.base.ingest.statistikk=http://ingest:8080
+statistics.years.back=0
 "
 }
 

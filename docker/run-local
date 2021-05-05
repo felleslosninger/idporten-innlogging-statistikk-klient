@@ -3,7 +3,8 @@
 export VERSION=DEV-SNAPSHOT
 export REGISTRY=local
 configName=idporten-innlogging-statistikk-klient
-secretName=idporten-innlogging-statistikk-klient_ingest-password
+secretKeyName=idporten-innlogging-maskinporten-private.pem
+secretCertName=idporten-innlogging-maskinporten.cer
 stackName=idporten
 
 __ok() {
@@ -24,13 +25,21 @@ assertStatisticsStackIsRunning() {
     __ok "Statistics stack is running"
 }
 
-assertOrCreateIngestPassword() {
-    [[ -z $(docker secret ls --quiet --filter name=${secretName}) ]] && {
-        read -p "No password exists for Statistics Ingest API. Do you want me to create one? [Y/n] " answer
+assertMaskinportenClientPrivateKey(){
+   [[ -z $(docker secret ls --quiet --filter name=${secretKeyName}) ]] && {
+    echo "Maskinporten client private key missing! You have to acquire correct private key which matches public key stored in Maskinporten and manually add this as docker secret: docker secret create ${secretKeyName} <privatekey.pem>"; return 1;
+
+  }
+  __ok "Maskinporten client private key exists"
+}
+
+assertOrCreateMaskinportenClientCert() {
+    [[ -z $(docker secret ls --quiet --filter name=${secretCertName}) ]] && {
+        read -p "No maskinporten client certificate exists for Statistics Ingest API. Do you want to create one? [Y/n] " answer
         [[ -z ${answer} ]] && answer='y'
-        [[ ${answer} =~ [yY] ]] && { echo -n "$(createIngestPassword)" | docker secret create ${secretName} -; } || { return 1; }
+        [[ ${answer} =~ [yY] ]] && { docker secret create ${secretCertName} docker/idporten-innlogging-statistikk-klient-test1.cer; } || { exit 1; }
     }
-    __ok "Ingest password exists"
+    __ok "Maskinporten client certificate exists"
 }
 
 assertOrCreateConfig() {
@@ -46,19 +55,13 @@ configString() {
     echo \
 "url.base.admin=https://admin.difi.eon.no
 url.base.ingest.statistikk=http://ingest:8080
+maskinporten.iss=ba40589f-8803-43f6-8254-f14e960d8b24
+maskinporten.aud=https://test1.maskinporten.no/
+maskinporten.token-endpoint=https://test1.maskinporten.no/token
+maskinporten.kid=25d5faaf-3d15-43fb-8132-a1d34dd84df7
 statistics.years.back=0
+statistics.days.back=1
 "
-}
-
-createIngestPassword() {
-    local user="991825827"
-    local password
-    password=$(curl \
-        -sS -f --connect-timeout 3 --max-time 10 \
-        -H "Content-Type: application/json;charset=UTF-8" \
-        -XPOST \
-        http://localhost:8083/credentials/${user}/short) || return $?
-    echo -n "${password}"
 }
 
 buildImages() {
@@ -82,7 +85,8 @@ clean() {
 [[ $1 == "-c" ]] && clean
 assertOrEnableSwarmMode || exit 1
 assertStatisticsStackIsRunning || return 1
-assertOrCreateIngestPassword || exit 1
+assertMaskinportenClientPrivateKey || exit 1
+assertOrCreateMaskinportenClientCert || exit 1
 assertOrCreateConfig || exit 1
 buildImages || exit 1
 deployStack || exit 1

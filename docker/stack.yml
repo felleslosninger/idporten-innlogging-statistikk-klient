@@ -9,20 +9,24 @@ services:
       - source: idporten-innlogging-statistikk-klient
         target: /application.properties
     secrets:
-      - source: idporten-innlogging-statistikk-klient_ingest-password
-        target: idporten-innlogging-stat-pumba
+      - source: idporten-innlogging-maskinporten.cer
+        target: maskinporten.cer
+      - source: idporten-innlogging-maskinporten-private.pem
+        target: maskinporten-private.pem
     networks:
       - net
-      - statistics_net
+      - statistics-api_net
 
 networks:
   net:
     driver: overlay
-  statistics_net:
+  statistics-api_net:
     external: true
 
 secrets:
-  idporten-innlogging-statistikk-klient_ingest-password:
+  idporten-innlogging-maskinporten.cer:
+    external: true
+  idporten-innlogging-maskinporten-private.pem:
     external: true
 
 configs:

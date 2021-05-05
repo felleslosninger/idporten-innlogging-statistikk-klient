@@ -7,6 +7,7 @@ import no.difi.statistikk.domain.IdportenLoginField;
 import no.difi.statistikk.domain.IdportenLoginFieldBuilder;
 import no.difi.statistikk.domain.IdportenLoginValue;
 import no.difi.statistikk.mapper.IdportenLoginMapper;
+import no.difi.statistikk.maskinporten.MaskinportenIntegration;
 import no.difi.statistikk.service.IdportenLoginFetch;
 import no.difi.statistikk.service.ServiceProviderFetch;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +37,9 @@ class DataTransferTest {
 
     private final ZonedDateTime timeRef = ZonedDateTime.of(LocalDate.of(2017, 1, 4), LocalTime.of(9, 05), ZoneId.of("Europe/Paris"));
     private final IdportenLoginField[] fields = {createIdportenLoginField("Direktoratet for forvaltning og ikt", "autotest-systest-sptest1", "cucumber-samltest", "cucumber-samltest", "0", "0", "43", "0", "0", "0", "4", "0", "0", "0", "0", "47")};
+
+    @Mock
+    private MaskinportenIntegration maskinportenMock;
 
     @Mock
     private IdportenLoginFetch fetchMock;
@@ -69,11 +73,13 @@ class DataTransferTest {
         when(fetchMock.perform(timeRef.plusHours(1))).thenReturn(fields);
         when(fetchMock.perform(from)).thenReturn(fields);
         when(mapperMock.mapMeasurements(Mockito.anyList(), eq(from))).thenReturn(tspMock);
+        when(maskinportenMock.acquireAccessToken()).thenReturn("faketoken");
+        when(maskinportenMock.acquireNewAccessToken()).thenReturn("newFaketoken");
 
-        DataTransfer dataTransfer = new DataTransfer(fetchMock, mapperMock, ingestClientMock);
+        DataTransfer dataTransfer = new DataTransfer(fetchMock, mapperMock, ingestClientMock, maskinportenMock);
         dataTransfer.transfer(from, from);
         verify(fetchMock, times(1)).perform(from);
-        verify(ingestClientMock, times(1)).ingest(any(TimeSeriesDefinition.class), any());
+        verify(ingestClientMock, times(1)).ingest(any(TimeSeriesDefinition.class), any(), anyString());
     }
 
     @Test
@@ -85,8 +91,10 @@ class DataTransferTest {
         //peak
         when(fetchMock.perform(from)).thenReturn(fields);
         when(fetchMock.perform(timeRef)).thenReturn(emptyFields);
+        when(maskinportenMock.acquireAccessToken()).thenReturn("faketoken");
+        when(maskinportenMock.acquireNewAccessToken()).thenReturn("newFaketoken");
 
-        DataTransfer dataTransfer = new DataTransfer(fetchMock, mapperMock, ingestClientMock);
+        DataTransfer dataTransfer = new DataTransfer(fetchMock, mapperMock, ingestClientMock, maskinportenMock);
         dataTransfer.transfer(from, from);
         verify(fetchMock, never()).perform(from);
         verifyZeroInteractions(mapperMock);
@@ -105,11 +113,13 @@ class DataTransferTest {
         when(fetchMock.perform(any(ZonedDateTime.class))).thenReturn(fields);
         when(fetchMock.perform(to.plusHours(1))).thenReturn(emptyFields);
         when(mapperMock.mapMeasurements(Mockito.anyList(), eq(from))).thenReturn(tspMock);
+        when(maskinportenMock.acquireAccessToken()).thenReturn("faketoken");
+        when(maskinportenMock.acquireNewAccessToken()).thenReturn("newFaketoken");
 
-        DataTransfer dataTransfer = new DataTransfer(fetchMock, mapperMock, ingestClientMock);
+        DataTransfer dataTransfer = new DataTransfer(fetchMock, mapperMock, ingestClientMock, maskinportenMock);
         dataTransfer.transfer(from, to);
         verify(fetchMock, times(1)).perform(from);
-        verify(ingestClientMock, times( numberOfHoursToGet)).ingest(any(TimeSeriesDefinition.class), any());
+        verify(ingestClientMock, times( numberOfHoursToGet)).ingest(any(TimeSeriesDefinition.class), any(), anyString());
     }
 
     @Test
@@ -124,11 +134,13 @@ class DataTransferTest {
         when(fetchMock.perform(hourWithEmptyR1Report)).thenReturn(emptyFields);
         when(fetchMock.perform(to)).thenReturn(emptyFields);
         when(mapperMock.mapMeasurements(Mockito.anyList(), eq(from))).thenReturn(tspMock);
+        when(maskinportenMock.acquireAccessToken()).thenReturn("faketoken");
+        when(maskinportenMock.acquireNewAccessToken()).thenReturn("newFaketoken");
 
-        DataTransfer dataTransfer = new DataTransfer(fetchMock, mapperMock, ingestClientMock);
+        DataTransfer dataTransfer = new DataTransfer(fetchMock, mapperMock, ingestClientMock, maskinportenMock);
         dataTransfer.transfer(from, to);
 
-        verify(ingestClientMock, times( 23)).ingest(any(TimeSeriesDefinition.class), any());
+        verify(ingestClientMock, times( 23)).ingest(any(TimeSeriesDefinition.class), any(), anyString());
     }
 
     @Test
@@ -140,7 +152,7 @@ class DataTransferTest {
 
         when(fetchMock.perform(any(ZonedDateTime.class))).thenReturn(emptyFields);
         when(mapperMock.mapMeasurements(Mockito.anyList(), eq(from))).thenReturn(tspMock);
-        DataTransfer dataTransfer = new DataTransfer(fetchMock, mapperMock, ingestClientMock);
+        DataTransfer dataTransfer = new DataTransfer(fetchMock, mapperMock, ingestClientMock, maskinportenMock);
         dataTransfer.transfer(from, to);
 
         verifyZeroInteractions(mapperMock);
@@ -160,14 +172,16 @@ class DataTransferTest {
 
         when(fetchMock.perform(timeRef.plusHours(1))).thenReturn(fields);
         when(fetchMock.perform(from)).thenReturn(fields);
+        when(maskinportenMock.acquireAccessToken()).thenReturn("faketoken");
+        when(maskinportenMock.acquireNewAccessToken()).thenReturn("newFaketoken");
 
         IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
 
-        DataTransfer dataTransfer = new DataTransfer(fetchMock, idportenLoginMapper, ingestClientMock);
+        DataTransfer dataTransfer = new DataTransfer(fetchMock, idportenLoginMapper, ingestClientMock, maskinportenMock);
         dataTransfer.transfer(from, from);
 
         verify(fetchMock, times(1)).perform(from);
-        verify(ingestClientMock, times(1)).ingest(any(TimeSeriesDefinition.class),tspCaptor.capture());
+        verify(ingestClientMock, times(1)).ingest(any(TimeSeriesDefinition.class),tspCaptor.capture(), anyString());
         assertEquals("TimeSeries size", 3, tspCaptor.getValue().size());
     }
 
@@ -183,14 +197,16 @@ class DataTransferTest {
 
         when(fetchMock.perform(timeRef.plusHours(1))).thenReturn(fields);
         when(fetchMock.perform(from)).thenReturn(fields);
+        when(maskinportenMock.acquireAccessToken()).thenReturn("faketoken");
+        when(maskinportenMock.acquireNewAccessToken()).thenReturn("newFaketoken");
 
         IdportenLoginMapper idportenLoginMapper = new IdportenLoginMapper(serviceProviderFetchMock);
 
-        DataTransfer dataTransfer = new DataTransfer(fetchMock, idportenLoginMapper, ingestClientMock);
+        DataTransfer dataTransfer = new DataTransfer(fetchMock, idportenLoginMapper, ingestClientMock, maskinportenMock);
         dataTransfer.transfer(from, from);
 
         verify(fetchMock, times(1)).perform(from);
-        verify(ingestClientMock, times(1)).ingest(any(TimeSeriesDefinition.class),tspCaptor.capture());
+        verify(ingestClientMock, times(1)).ingest(any(TimeSeriesDefinition.class),tspCaptor.capture(), anyString());
         assertEquals("TimeSeries size", 2, tspCaptor.getValue().size());
     }
 

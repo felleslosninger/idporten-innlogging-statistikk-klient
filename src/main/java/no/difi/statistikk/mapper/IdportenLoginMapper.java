@@ -5,6 +5,8 @@ import no.difi.statistikk.domain.IdportenLoginField;
 import no.difi.statistikk.domain.IdportenLoginValue;
 import no.difi.statistikk.domain.ServiceProvider;
 import no.difi.statistikk.service.ServiceProviderFetch;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -15,11 +17,13 @@ import java.util.stream.Collectors;
 
 import static no.difi.statistics.ingest.client.model.TimeSeriesPoint.timeSeriesPoint;
 
+@Service
 public class IdportenLoginMapper {
 
     private final ServiceProviderFetch serviceProviderFetch;
     protected List<String> measurementsIds = new ArrayList<>();
 
+    @Autowired
     public IdportenLoginMapper(ServiceProviderFetch serviceProviderFetch) {
         this.serviceProviderFetch = serviceProviderFetch;
         measurementsIds.add("MinID");

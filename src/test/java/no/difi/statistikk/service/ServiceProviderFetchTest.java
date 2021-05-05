@@ -1,15 +1,18 @@
 package no.difi.statistikk.service;
 
+import no.difi.statistikk.Properties;
 import no.difi.statistikk.domain.ServiceProvider;
 import no.difi.statistikk.testutils.MockitoExtension;
-
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,13 +27,20 @@ public class ServiceProviderFetchTest {
     @Mock
     private RestTemplate restTemplate;
 
+    @Mock
+    private Properties properties;
+
     @InjectMocks
     private ServiceProviderFetch serviceProviderFetch;
+
+    @Before
+    public void setup() throws MalformedURLException {
+        when(properties.getIdportenAdminUrl()).thenReturn(new URL("http://localhost/"));
+    }
 
     @Test
     public void shouldReturnEmptyListWhenResponseIsEmpty() {
         ServiceProvider[] spList = {};
-
         when(restTemplate.getForObject(any(URI.class), eq(ServiceProvider[].class))).thenReturn(spList);
         List actualServiceproviders = serviceProviderFetch.perform();
         assertEquals(actualServiceproviders, Arrays.asList(spList));

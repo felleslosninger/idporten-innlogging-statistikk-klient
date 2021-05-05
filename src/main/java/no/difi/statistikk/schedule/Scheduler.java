@@ -4,17 +4,21 @@ import no.difi.statistikk.fetch.DataTransfer;
 import no.difi.statistikk.service.LastDatapoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+@Service
 public class Scheduler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final DataTransfer dataTransfer;
     private final LastDatapoint lastDatapoint;
     private final String seriesName = "idporten-innlogging";
 
+    @Autowired
     public Scheduler(DataTransfer dataTransfer, LastDatapoint lastDatapoint) {
         this.dataTransfer = dataTransfer;
         this.lastDatapoint = lastDatapoint;

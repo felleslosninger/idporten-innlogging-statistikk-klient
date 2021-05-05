@@ -1,26 +1,31 @@
 package no.difi.statistikk.service;
 
+import no.difi.statistikk.Properties;
 import no.difi.statistikk.domain.IdportenLoginField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
+
 import java.net.URI;
-import java.net.URL;
 import java.time.ZonedDateTime;
 
 
+@Service
 public class IdportenLoginFetch {
     private final UriTemplate uriTemplate;
     private final RestTemplate restTemplate;
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final String reportType = ("r1");
 
-    public IdportenLoginFetch(URL baseUrl, RestTemplate restTemplate) {
+    @Autowired
+    public IdportenLoginFetch(Properties properties, RestTemplate restTemplate) {
         this.uriTemplate = new UriTemplate(
-                baseUrl + "/idporten-admin/statistics/statistics/json/" +
-                "{reportType}/" +
-                "{fromYear}/{fromMonth}/{fromDay}/{fromHour}/"
+                properties.getIdportenAdminUrl() + "/idporten-admin/statistics/statistics/json/" +
+                        "{reportType}/" +
+                        "{fromYear}/{fromMonth}/{fromDay}/{fromHour}/"
         );
         this.restTemplate = restTemplate;
     }

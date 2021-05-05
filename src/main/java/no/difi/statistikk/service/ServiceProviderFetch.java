@@ -1,24 +1,33 @@
 package no.difi.statistikk.service;
 
+import no.difi.statistikk.Properties;
 import no.difi.statistikk.domain.ServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
+
 import java.net.URI;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.System.currentTimeMillis;
 
+@Service
 public class ServiceProviderFetch {
     private final UriTemplate uriTemplate;
     private final RestTemplate restTemplate;
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Properties properties;
 
-    public ServiceProviderFetch(URL baseUrl, RestTemplate restTemplate) {
-        this.uriTemplate = new UriTemplate(baseUrl +"/idporten-admin/sp/idporten/rest/splist/");
+
+
+    @Autowired
+    public ServiceProviderFetch(Properties properties, RestTemplate restTemplate) {
+        this.properties = properties;
+        this.uriTemplate = new UriTemplate(properties.getIdportenAdminUrl() +"/idporten-admin/sp/idporten/rest/splist/");
         this.restTemplate = restTemplate;
     }
 

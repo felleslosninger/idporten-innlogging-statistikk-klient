@@ -6,7 +6,7 @@ services:
     ports:
       - "8085:8080"
     configs:
-      - source: idporten-innlogging-statistikk-klient
+      - source: idporten-innlogging-properties
         target: /application.properties
     secrets:
       - source: idporten-innlogging-maskinporten.cer
@@ -30,5 +30,5 @@ secrets:
     external: true
 
 configs:
-  idporten-innlogging-statistikk-klient:
+  idporten-innlogging-properties:
     external: true

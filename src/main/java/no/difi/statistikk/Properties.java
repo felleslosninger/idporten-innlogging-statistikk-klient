@@ -27,19 +27,11 @@ public class Properties {
     private Environment environment;
 
     public Properties(Environment environment) {
-        logger.error("starting now");
         this.environment = environment;
         idportenAdminUrl = environment.getRequiredProperty("url.base.admin", URL.class);
         statisticsIngestUrl = environment.getRequiredProperty("url.base.ingest.statistikk", URL.class);
 
         baseLine = getBaseLine(environment.getProperty("statistics.years.back", Integer.class), environment.getProperty("statistics.days.back", Integer.class));
-//        final String fileName = environment.getRequiredProperty("file.base.difi-statistikk");
-//        try {
-//            final Path pathToPasswordFile = Paths.get(fileName);
-//            ingestPassword = new String(Files.readAllBytes(pathToPasswordFile));
-//        } catch (IOException e) {
-//            throw new RuntimeException("Failed to load file defined in environment property 'file.base.difi-statistikk': " + fileName, e);
-//        }
     }
 
     protected ZonedDateTime getBaseLine(Integer yearsFromConfig, Integer daysFromConfig) {

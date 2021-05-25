@@ -47,9 +47,9 @@ public class MaskinportenProperties {
     @Data
     public static class KeyProperties {
         @NotNull
-        private Resource certificate;
+        private Resource certificatePath;
         @NotNull
-        private Resource privateKey;
+        private Resource privateKeyPath;
     }
 
 

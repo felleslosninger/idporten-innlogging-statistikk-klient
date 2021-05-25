@@ -2,7 +2,9 @@ package no.difi.statistikk.config;
 
 import lombok.Getter;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,29 +21,28 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Objects;
 
 /**
  * Loads keys from disk..
  */
 @Getter
+@Service
 public class KeySecretProvider {
 
     private final Certificate certificate;
     private final RSAPrivateKey privateKey;
 
-    private KeySecretProvider(RSAPrivateKey privateKey, Certificate certificate) {
-        this.privateKey = Objects.requireNonNull(privateKey);
-        this.certificate = Objects.requireNonNull(certificate);
+    private final MaskinportenProperties maskinportenProperties;
+
+    @Autowired
+    public KeySecretProvider(MaskinportenProperties properties) {
+        this.maskinportenProperties = properties;
+        this.privateKey = readPrivateKey(properties.getClientKeys().getPrivateKeyPath());
+        this.certificate = readCertificate(properties.getClientKeys().getCertificatePath());
     }
 
-    public static KeySecretProvider from(MaskinportenProperties.KeyProperties properties) {
-//        return new KeySecretProvider(loadKeyStore(Objects.requireNonNull(properties)));
-        Objects.requireNonNull(properties);
-        return new KeySecretProvider(readPrivateKey(properties.getPrivateKey()), readCertificate(properties.getCertificate()));
-    }
 
-    public static Certificate readCertificate(Resource file) {
+    public Certificate readCertificate(Resource file) {
         CertificateFactory certFactory;
         try {
             certFactory = CertificateFactory.getInstance("X.509");
@@ -60,36 +61,8 @@ public class KeySecretProvider {
         return cer;
     }
 
-//    public static RSAPublicKey readPublicKey(Resource file) {
-//        String keyAsText;
-//        try {
-//            final File keyFile = file.getFile();
-//            keyAsText = new String(Files.readAllBytes(keyFile.toPath()), Charset.defaultCharset());
-//        } catch (IOException e) {
-//            throw new RuntimeException("Failed to read public key for Maskinporten from Docker secrets: " + file.getFilename(), e);
-//        }
-//
-//        String publicKeyPEM = keyAsText
-//                .replace("-----BEGIN PUBLIC KEY-----", "")
-//                .replaceAll(System.lineSeparator(), "")
-//                .replace("-----END PUBLIC KEY-----", "");
-//
-//        byte[] encoded = Base64.decodeBase64(publicKeyPEM);
-//
-//
-//        final PublicKey publicKey;
-//        try {
-//            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-//            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(encoded);
-//            publicKey = keyFactory.generatePublic(keySpec);
-//        } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
-//            throw new RuntimeException("Failed to read public key for Maskinporten from Docker secrets: " + file.getFilename(), e);
-//        }
-//        return (RSAPublicKey) publicKey;
-//    }
 
-
-    public static RSAPrivateKey readPrivateKey(Resource file) {
+    public RSAPrivateKey readPrivateKey(Resource file) {
         String keyAsText;
         try {
             final File keyFile = file.getFile();

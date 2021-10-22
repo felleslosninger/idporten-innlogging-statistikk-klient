@@ -212,7 +212,7 @@
     <repositories>
         <repository>
             <id>maven-releases</id>
-            <url>${artifactory.url}/libs-release-local</url>
+            <url>${artifactory.url}/libs-release</url>
         </repository>
         <repository>
             <id>spring-milestones</id>

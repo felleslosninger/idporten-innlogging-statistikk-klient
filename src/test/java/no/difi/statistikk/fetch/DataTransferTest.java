@@ -36,7 +36,7 @@ import static org.springframework.test.util.AssertionErrors.assertEquals;
 class DataTransferTest {
 
     private final ZonedDateTime timeRef = ZonedDateTime.of(LocalDate.of(2017, 1, 4), LocalTime.of(9, 05), ZoneId.of("Europe/Paris"));
-    private final IdportenLoginField[] fields = {createIdportenLoginField("Direktoratet for forvaltning og ikt", "autotest-systest-sptest1", "cucumber-samltest", "cucumber-samltest", "0", "0", "43", "0", "0", "0", "4", "0", "0", "0", "0", "47")};
+    private final IdportenLoginField[] fields = {createIdportenLoginField("Direktoratet for forvaltning og ikt", "autotest-systest-sptest1", "cucumber-samltest", "cucumber-samltest", "0", "0", "43", "0", "0", "0", "4", "0", "0", "0", "0", "0", "47")};
 
     @Mock
     private MaskinportenIntegration maskinportenMock;
@@ -163,10 +163,10 @@ class DataTransferTest {
     public void shouldRemoveLastRowFromReport() {
 
         final IdportenLoginField[] fields = {
-                createIdportenLoginField("Direktoratet for forvaltning og ikt", "autotest-systest-sptest1", "cucumber-samltest", "cucumber-samltest", "0", "0", "43", "0", "0", "0", "4", "0", "0", "0", "0", "47"),
-                createIdportenLoginField("Direktoratet for forvaltning og ikt", "autotest-systest-sptest1", "cucumber-samltest", "cucumber-samltest", "0", "0", "43", "0", "0", "0", "4", "0", "0", "0", "0", "47"),
-                createIdportenLoginField("Direktoratet for forvaltning og ikt", "autotest-systest-sptest1", "cucumber-samltest", "cucumber-samltest", "0", "0", "43", "0", "0", "0", "4", "0", "0", "0", "0", "47"),
-                createIdportenLoginField("Sum", null, null, null, "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "141")};
+                createIdportenLoginField("Direktoratet for forvaltning og ikt", "autotest-systest-sptest1", "cucumber-samltest", "cucumber-samltest", "0", "0", "43", "0", "0", "0", "4", "0", "0", "0", "0", "0", "47"),
+                createIdportenLoginField("Direktoratet for forvaltning og ikt", "autotest-systest-sptest1", "cucumber-samltest", "cucumber-samltest", "0", "0", "43", "0", "0", "0", "4", "0", "0", "0", "0", "0", "47"),
+                createIdportenLoginField("Direktoratet for forvaltning og ikt", "autotest-systest-sptest1", "cucumber-samltest", "cucumber-samltest", "0", "0", "43", "0", "0", "0", "4", "0", "0", "0", "0", "0", "47"),
+                createIdportenLoginField("Sum", null, null, null, "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "141")};
 
         ZonedDateTime from = timeRef;
 
@@ -189,9 +189,9 @@ class DataTransferTest {
     public void shouldRemoveLastRowFromReportWhenTwoRows() {
 
         final IdportenLoginField[] fields = {
-                createIdportenLoginField("Direktoratet for forvaltning og ikt", "autotest-systest-sptest1", "cucumber-samltest", "cucumber-samltest", "0", "0", "43", "0", "0", "0", "4", "0", "0", "0", "0", "47"),
-                createIdportenLoginField("Direktoratet for forvaltning og ikt", "autotest-systest-sptest1", "cucumber-samltest", "cucumber-samltest", "0", "0", "43", "0", "0", "0", "4", "0", "0", "0", "0", "47"),
-                createIdportenLoginField("Sum", null, null, null, "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "94")};
+                createIdportenLoginField("Direktoratet for forvaltning og ikt", "autotest-systest-sptest1", "cucumber-samltest", "cucumber-samltest", "0", "0", "43", "0", "0", "0", "4", "0", "0", "0", "0", "0", "47"),
+                createIdportenLoginField("Direktoratet for forvaltning og ikt", "autotest-systest-sptest1", "cucumber-samltest", "cucumber-samltest", "0", "0", "43", "0", "0", "0", "4", "0", "0", "0", "0", "0", "47"),
+                createIdportenLoginField("Sum", null, null, null, "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "94")};
 
         ZonedDateTime from = timeRef;
 

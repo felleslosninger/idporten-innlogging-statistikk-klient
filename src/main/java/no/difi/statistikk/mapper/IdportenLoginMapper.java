@@ -37,6 +37,7 @@ public class IdportenLoginMapper {
         measurementsIds.add("BankID mobil");
         measurementsIds.add("MinID passport");
         measurementsIds.add("Buypass passport");
+        measurementsIds.add("MinID App");
         measurementsIds.add("Antall");
     }
 

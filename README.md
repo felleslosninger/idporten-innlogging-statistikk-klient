@@ -1,9 +1,9 @@
-#Idporten innlogging statistikk klient
+# Idporten innlogging statistikk klient
 
 Modul for å hente statistikk fra idporten og legge inn i {statistikkløsningen}(https://github.com/difi/poc-statistics).
 Bruker rest-apiet i admin for å trekke ut data, og legger det inn v.h.a. rest-apiet til statistikkløsningen.
 
-##Forutsetninger
+## Forutsetninger
 Du må ha følgende tilgjengelig:
 * JDK 1.8 eller nyere
 * Maven 3.3 eller nyere
@@ -11,7 +11,7 @@ Du må ha følgende tilgjengelig:
 * Tilgang til IDPortens admin-API
 * Tilgang til statistikkapplikasjonen
 
-##Oppsett
+## Oppsett
 Etter at prosjektet er klonet, kjør
 
 `mvn package`
@@ -19,7 +19,7 @@ Etter at prosjektet er klonet, kjør
 Dette vil både lage jar-filen for prosjektet, Dockerfile og docker image.
 Applikasjonen kan nå startes enten på localhost eller i en docker-container.
 
-##Bygging og utrulling
+## Bygging og utrulling
 Prosjektet leverer Java jar applikasjon pakket inn i Docker-bildet.
 
 Applikasjonen benytter to påkrevde parametre for å angi URL til idporten-admin og {statistikkløsningen}(https://github.com/difi/poc-statistics):
